@@ -4,31 +4,72 @@ import { useLocation, useNavigate } from "react-router-dom";
 export default function ProceedToPay() {
   const navigate = useNavigate();
   const { state } = useLocation();
+
+  // State for items being purchased
+  const [items, setItems] = useState([]);
+  const [itemName, setItemName] = useState("");
+  const [itemPrice, setItemPrice] = useState("");
+  const [escrowData, setEscrowData] = useState(null);
+
+  // Escrow fee constant
+  const ESCROW_FEE = 2000;
+
+  const itemsTotal = items.reduce((sum, item) => sum + item.price, 0);
+
+  const totalPayable = itemsTotal + ESCROW_FEE;
+
+  // Payment and link states
+  const [hasPaid, setHasPaid] = useState(false);
+  const [hasCopied, setHasCopied] = useState(false);
+  const [hasInitiatedSend, setHasInitiatedSend] = useState(false);
+  const isLocked = hasPaid;
+
+  // Escrow link state
   const [escrowLink, setEscrowLink] = useState("");
 
   const verification = state?.verification;
-  const [hasInitiatedSend, setHasInitiatedSend] = useState(false);
 
   const generateEscrowLink = () => {
-    const escrowId = Math.random().toString(36).substring(2, 10);
+    const escrowId = crypto.randomUUID();
+
+    const escrowPayload = {
+      escrowId,
+      items,
+      itemsTotal,
+      escrowFee: ESCROW_FEE,
+      totalPayable,
+      createdAt: new Date().toISOString(),
+    };
+
+    setEscrowData(escrowPayload);
+
     const link = `${window.location.origin}/escrow/${escrowId}`;
     setEscrowLink(link);
   };
 
+  const itemList = items
+    .map((item) => `• ${item.name} — ₦${item.price.toLocaleString()}`)
+    .join("\n");
+
   const vendorMessage = `
 Hello 👋
 
-To proceed safely, I’m using VerifyCart Escrow.
+I’m using VerifyCart Escrow for this transaction.
 
-This protects both of us:
+🆔 Escrow ID: ${escrowData?.escrowId}
+
+🛒 Items:
+${itemList}
+
+💰 Items Total: ₦${itemsTotal.toLocaleString()}
+
+How this works:
 • My payment is held securely
-• You ship only after escrow confirmation
+• You ship after confirming escrow
 • Funds are released after delivery
 
 Please confirm using the link below:
 ${escrowLink}
-
-Once confirmed, I’ll proceed immediately.
 
 Thank you 🙏
 `.trim();
@@ -62,14 +103,159 @@ Thank you 🙏
           </ul>
         </div>
 
+        <div className="bg-white p-5 rounded-lg shadow space-y-3">
+          <h2 className="text-lg font-semibold">Items to Buy</h2>
+
+          <div className="flex gap-2">
+            <input
+              disabled={isLocked}
+              value={itemName}
+              onChange={(e) => setItemName(e.target.value)}
+              placeholder="Item name"
+              className="flex-1 border px-3 py-2 rounded-md text-sm disabled:bg-gray-100"
+            />
+
+            <input
+              disabled={isLocked}
+              value={itemPrice}
+              onChange={(e) => setItemPrice(e.target.value)}
+              placeholder="Price"
+              type="number"
+              className="w-32 border px-3 py-2 rounded-md text-sm disabled:bg-gray-100"
+            />
+
+            <button
+              disabled={isLocked}
+              onClick={() => {
+                if (!itemName || !itemPrice) return;
+
+                setItems([
+                  ...items,
+                  {
+                    id: crypto.randomUUID(),
+                    name: itemName,
+                    price: Number(itemPrice),
+                  },
+                ]);
+
+                setItemName("");
+                setItemPrice("");
+              }}
+              className={`px-4 rounded-md ${
+                isLocked ? "bg-gray-400" : "bg-indigo-600 text-white"
+              }`}
+            >
+              Add
+            </button>
+
+            {isLocked && (
+              <p className="text-xs text-red-500">
+                Items are locked after payment for escrow security.
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* order summary */}
+        <div className="bg-white p-5 rounded-lg shadow space-y-2">
+          <h2 className="text-lg font-semibold">Payment Summary</h2>
+
+          {items.map((item, i) => (
+            <div
+              key={item.id}
+              className="flex justify-between items-center gap-2 text-sm"
+            >
+              <input
+                disabled={isLocked}
+                value={item.name}
+                onChange={(e) => {
+                  const updated = [...items];
+                  updated[i] = { ...updated[i], name: e.target.value };
+                  setItems(updated);
+                }}
+                className="border px-2 py-1 rounded w-full disabled:bg-gray-100"
+              />
+
+              <input
+                disabled={isLocked}
+                type="number"
+                value= {item.price}
+                onChange={(e) => {
+                  const updated = [...items];
+                  updated[i] = { ...updated[i], price: Number(e.target.value) };
+                  setItems(updated);
+                }}
+                className="border px-2 py-1 rounded w-28 disabled:bg-gray-100"
+              />
+
+              {!isLocked && (
+                <button
+                  onClick={() =>
+                    setItems(items.filter((_, index) => index !== i))
+                  }
+                  className="text-red-600 text-xs"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          ))}
+
+          <div className="flex justify-between text-sm text-gray-600">
+            <span>Escrow Fee</span>
+            <span>₦{ESCROW_FEE.toLocaleString()}</span>
+          </div>
+
+          <div className="border-t pt-2 flex justify-between font-semibold">
+            <span>Total to Pay</span>
+            <span>₦{totalPayable.toLocaleString()}</span>
+          </div>
+        </div>
+
+        {/* Pay Button */}
+        <div className="bg-yellow-50 border p-4 rounded-md text-sm">
+          <p className="font-medium">Transfer to VerifyCart Escrow</p>
+          <p>Bank: Providus Bank</p>
+          <p>Account Name: VerifyCart Escrow</p>
+          <p>Account Number: 1234567890</p>
+        </div>
+
+        <button
+          disabled={items.length === 0 || hasPaid}
+          onClick={() => {
+            setHasPaid(true);
+          }}
+          className={`w-full py-3 rounded-md font-medium text-white ${
+            items.length === 0 || hasPaid ? "bg-gray-400" : "bg-indigo-600"
+          }`}
+        >
+          {hasPaid
+            ? "Payment Received"
+            : `Pay ₦${totalPayable.toLocaleString()}`}
+        </button>
+
+        {items.length === 0 && (
+          <p className="text-xs text-gray-500 text-center">
+            Add at least one item to continue.
+          </p>
+        )}
+        {hasPaid && (
+          <p className="text-xs text-red-500 text-center">
+            Items are locked after payment for escrow security.
+          </p>
+        )}
+
         {/* Generate Link */}
         <div className="bg-white p-5 rounded-lg shadow space-y-4">
           <h2 className="text-lg font-semibold">Send Escrow Link to Vendor</h2>
 
           {!escrowLink ? (
             <button
+              disabled={!hasPaid}
               onClick={generateEscrowLink}
-              className="w-full bg-indigo-600 text-white py-3 rounded-md font-medium"
+              className={`w-full py-3 rounded-md font-medium text-white ${
+                hasPaid ? "bg-indigo-600" : "bg-gray-400 cursor-not-allowed"
+              }`}
             >
               Generate Secure Escrow Link
             </button>
@@ -97,11 +283,12 @@ Thank you 🙏
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(vendorMessage);
+                    setHasCopied(true);
                     setHasInitiatedSend(true);
                   }}
                   className="bg-gray-800 text-white py-2 rounded-md"
                 >
-                  📋 Copy Message
+                  {hasCopied ? "✅ Copied" : "📋 Copy Message"}
                 </button>
 
                 <a

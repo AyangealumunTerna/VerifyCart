@@ -4,6 +4,11 @@ import ProceedToPay from "./pages/ProceedToPay";
 import WaitingForVendor from "./pages/WaitingForVendor";
 import VendorEscrow from "./pages/VendorEscrow";
 import WaitingForDelivery from "./pages/WaitingForDelivery";
+import DeliveryDetails from "./pages/DeliveryDetails";
+import VendorDeliveryView from "./pages/VendorDeliveryView";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import Row from "./pages/admin/Row";
+import StatCard from "./pages/admin/StatCard";
 
 export default function App() {
   return (
@@ -13,6 +18,11 @@ export default function App() {
       <Route path="/waiting-for-vendor" element={<WaitingForVendor />} />
       <Route path="/waiting-for-delivery" element={<WaitingForDelivery />} />
       <Route path="/escrow/:escrowId" element={<VendorEscrow />} />
+      <Route path="/delivery-details/:escrowId" element={<DeliveryDetails />} />
+      <Route path="/vendor-delivery-view/:escrowId" element={<VendorDeliveryView />} />
+      <Route path="/admin-dashboard" element={<AdminDashboard />} />
+      <Route path="/admin-dashboard/row" element={<Row />} />
+      <Route path="/admin-dashboard/stat-card" element={<StatCard />} />
     </Routes>
   );
 }
