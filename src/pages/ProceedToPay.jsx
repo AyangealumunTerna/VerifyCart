@@ -79,7 +79,7 @@ Thank you 🙏
   const emailBody = vendorMessage.replace(/\n/g, "%0A");
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-10">
+    <div className="min-h-screen bg-gray-50 px-4 py-6 sm:py-10">
       <div className="max-w-2xl mx-auto space-y-6">
         {/* HEADER */}
         <button
@@ -106,13 +106,13 @@ Thank you 🙏
         <div className="bg-white p-5 rounded-lg shadow space-y-3">
           <h2 className="text-lg font-semibold">Items to Buy</h2>
 
-          <div className="flex gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
             <input
               disabled={isLocked}
               value={itemName}
               onChange={(e) => setItemName(e.target.value)}
               placeholder="Item name"
-              className="flex-1 border px-3 py-2 rounded-md text-sm disabled:bg-gray-100"
+              className="sm:col-span-3 border px-3 py-2 rounded-md text-sm disabled:bg-gray-100"
             />
 
             <input
@@ -121,7 +121,7 @@ Thank you 🙏
               onChange={(e) => setItemPrice(e.target.value)}
               placeholder="Price"
               type="number"
-              className="w-32 border px-3 py-2 rounded-md text-sm disabled:bg-gray-100"
+              className="sm:col-span-1 border px-3 py-2 rounded-md text-sm disabled:bg-gray-100"
             />
 
             <button
@@ -141,19 +141,18 @@ Thank you 🙏
                 setItemName("");
                 setItemPrice("");
               }}
-              className={`px-4 rounded-md ${
+              className={`sm:col-span-1 py-2 rounded-md ${
                 isLocked ? "bg-gray-400" : "bg-indigo-600 text-white"
               }`}
             >
               Add
             </button>
-
-            {isLocked && (
-              <p className="text-xs text-red-500">
-                Items are locked after payment for escrow security.
-              </p>
-            )}
           </div>
+          {isLocked && (
+            <p className="text-xs text-red-500">
+              Items are locked after payment for escrow security.
+            </p>
+          )}
         </div>
 
         {/* order summary */}
@@ -163,7 +162,7 @@ Thank you 🙏
           {items.map((item, i) => (
             <div
               key={item.id}
-              className="flex justify-between items-center gap-2 text-sm"
+              className="grid grid-cols-1 sm:grid-cols-6 gap-2 items-center text-sm"
             >
               <input
                 disabled={isLocked}
@@ -173,19 +172,19 @@ Thank you 🙏
                   updated[i] = { ...updated[i], name: e.target.value };
                   setItems(updated);
                 }}
-                className="border px-2 py-1 rounded w-full disabled:bg-gray-100"
+                className="sm:col-span-3 border px-2 py-1 rounded w-full disabled:bg-gray-100"
               />
 
               <input
                 disabled={isLocked}
                 type="number"
-                value= {item.price}
+                value={item.price}
                 onChange={(e) => {
                   const updated = [...items];
                   updated[i] = { ...updated[i], price: Number(e.target.value) };
                   setItems(updated);
                 }}
-                className="border px-2 py-1 rounded w-28 disabled:bg-gray-100"
+                className="sm:col-span-2 border px-2 py-1 rounded w-full disabled:bg-gray-100"
               />
 
               {!isLocked && (
@@ -193,7 +192,7 @@ Thank you 🙏
                   onClick={() =>
                     setItems(items.filter((_, index) => index !== i))
                   }
-                  className="text-red-600 text-xs"
+                  className="sm:col-span-1 text-red-600 text-xs justify-self-end"
                 >
                   ✕
                 </button>
@@ -213,26 +212,26 @@ Thank you 🙏
         </div>
 
         {/* Pay Button */}
-        <div className="bg-yellow-50 border p-4 rounded-md text-sm">
-          <p className="font-medium">Transfer to VerifyCart Escrow</p>
-          <p>Bank: Providus Bank</p>
-          <p>Account Name: VerifyCart Escrow</p>
-          <p>Account Number: 1234567890</p>
-        </div>
+        <div className="space-y-3">
+          <div className="bg-yellow-50 border p-4 rounded-md text-sm">
+            <p className="font-medium">Transfer to VerifyCart Escrow</p>
+            <p>Bank: Providus Bank</p>
+            <p>Account Name: VerifyCart Escrow</p>
+            <p>Account Number: 1234567890</p>
+          </div>
 
-        <button
-          disabled={items.length === 0 || hasPaid}
-          onClick={() => {
-            setHasPaid(true);
-          }}
-          className={`w-full py-3 rounded-md font-medium text-white ${
-            items.length === 0 || hasPaid ? "bg-gray-400" : "bg-indigo-600"
-          }`}
-        >
-          {hasPaid
-            ? "Payment Received"
-            : `Pay ₦${totalPayable.toLocaleString()}`}
-        </button>
+          <button
+            disabled={items.length === 0 || hasPaid}
+            onClick={() => { setHasPaid(true); }}
+            className={`w-full py-3 rounded-md font-medium text-white ${
+              items.length === 0 || hasPaid ? "bg-gray-400" : "bg-indigo-600"
+            }`}
+          >
+            {hasPaid
+              ? "Payment Received"
+              : `Pay ₦${totalPayable.toLocaleString()}`}
+          </button>
+        </div>
 
         {items.length === 0 && (
           <p className="text-xs text-gray-500 text-center">
@@ -270,7 +269,7 @@ Thank you 🙏
               />
 
               {/* Message Preview */}
-              <div className="bg-gray-50 border rounded-md p-4 text-sm whitespace-pre-wrap">
+              <div className="bg-gray-50 border rounded-md p-4 text-sm whitespace-pre-wrap max-h-64 overflow-y-auto">
                 {vendorMessage}
                 <p className="text-xs text-gray-500">
                   Copy and send this message via WhatsApp, Instagram DM, or
