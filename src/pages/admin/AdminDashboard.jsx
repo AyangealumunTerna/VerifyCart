@@ -3,16 +3,34 @@ import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import Row from "./Row";
 import StatCard from "./StatCard";
-
+import { useNavigate } from "react-router-dom";
 
 export default function AdminDashboard() {
+  const navigate = useNavigate(); // ✅ MOVE IT HERE
+
   return (
-    <div className="min-h-screen bg-gray-100 py-10 px-40">
-      {/* Header */}
-      <header className="flex items-center justify-between mb-8">
+    <div className="min-h-screen bg-gray-100 py-6 px-4 sm:px-6 lg:px-20 xl:px-40">
+      {/* HEADER */}
+      <div className="flex items-center justify-end gap-3 mb-6">
+        {/* <button
+          onClick={() => navigate("/")}
+          className="text-sm text-indigo-600 hover:underline"
+        >
+          ← Home
+        </button> */}
+
+        <button
+          onClick={() => navigate("/")}
+          className="text-sm font-medium text-red-600 border border-red-200 px-3 py-1 rounded-md hover:bg-red-50"
+        >
+          Logout
+        </button>
+      </div>
+
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
         <h1 className="text-2xl font-bold">Escrow Admin Dashboard</h1>
-        <div className="flex items-center gap-3">
-          <div className="relative">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="relative w-full sm:w-72">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
               type="text"
@@ -39,12 +57,11 @@ export default function AdminDashboard() {
       {/* Table */}
       <Card className="rounded-2xl">
         <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
             <h2 className="font-semibold">Transactions</h2>
-            <div className="flex gap-2">
-              <Button size="sm" variant="default">
-                All
-              </Button>
+
+            <div className="flex flex-wrap gap-2">
+              <Button size="sm">All</Button>
               <Button size="sm" variant="outline">
                 In Escrow
               </Button>
@@ -58,7 +75,7 @@ export default function AdminDashboard() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm min-w-[700px]">
               <thead className="text-left text-gray-500">
                 <tr>
                   <th className="py-2">Transaction ID</th>
