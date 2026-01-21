@@ -5,6 +5,8 @@ import BlogCard from "../components/BlogCard";
 import FeatureCard from "../components/FeatureCard";
 import VerificationResult from "../components/VerificationResult";
 import LoadingSpinner from "../components/LoadingSpinner";
+import Community from "../assets/community.png";
+
 
 export default function Landing() {
   const [loading, setLoading] = useState(false);

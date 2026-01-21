@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Info } from "lucide-react";
 
 export default function ProceedToPay() {
   const navigate = useNavigate();
@@ -12,11 +13,19 @@ export default function ProceedToPay() {
   const [escrowData, setEscrowData] = useState(null);
 
   // Escrow fee constant
-  const ESCROW_FEE = 2000;
+  const ESCROW_FEE_RATE = 0.05; // 5%
+  const ESCROW_FEE_MIN = 500;
+  const ESCROW_FEE_MAX = 50_000;
 
   const itemsTotal = items.reduce((sum, item) => sum + item.price, 0);
+  const rawEscrowFee = Math.round(itemsTotal * ESCROW_FEE_RATE);
 
-  const totalPayable = itemsTotal + ESCROW_FEE;
+  const escrowFee = Math.min(
+    ESCROW_FEE_MAX,
+    Math.max(ESCROW_FEE_MIN, rawEscrowFee),
+  );
+
+  const totalPayable = itemsTotal + escrowFee;
 
   // Payment and link states
   const [hasPaid, setHasPaid] = useState(false);
@@ -36,12 +45,18 @@ export default function ProceedToPay() {
       escrowId,
       items,
       itemsTotal,
-      escrowFee: ESCROW_FEE,
+      escrowFee,
+      escrowFeeRate: ESCROW_FEE_RATE,
+      escrowFeeMin: ESCROW_FEE_MIN,
+      escrowFeeMax: ESCROW_FEE_MAX,
       totalPayable,
       createdAt: new Date().toISOString(),
     };
 
     setEscrowData(escrowPayload);
+
+    // ⬇️ persist escrow (mock backend)
+    localStorage.setItem(`escrow-${escrowId}`, JSON.stringify(escrowPayload));
 
     const link = `${window.location.origin}/escrow/${escrowId}`;
     setEscrowLink(link);
@@ -200,9 +215,26 @@ Thank you 🙏
             </div>
           ))}
 
-          <div className="flex justify-between text-sm text-gray-600">
-            <span>Escrow Fee</span>
-            <span>₦{ESCROW_FEE.toLocaleString()}</span>
+          <div className="flex justify-between text-sm text-gray-600 items-center">
+            <div className="flex items-center gap-1 relative group">
+              <span>Escrow Fee (5%)</span>
+
+              <Info className="w-4 h-4 text-gray-400 cursor-pointer" />
+
+              {/* Tooltip */}
+              <div className="absolute left-0 top-6 w-64 bg-gray-900 text-white text-xs rounded-md p-3 opacity-0 group-hover:opacity-100 transition pointer-events-none z-20">
+                <p className="font-medium mb-1">What is this?</p>
+                <p>
+                  A 5% service fee for secure escrow handling.
+                  <br />
+                  <strong>Min:</strong> ₦500
+                  <br />
+                  <strong>Max:</strong> ₦50,000
+                </p>
+              </div>
+            </div>
+
+            <span>₦{escrowFee.toLocaleString()}</span>
           </div>
 
           <div className="border-t pt-2 flex justify-between font-semibold">
@@ -222,7 +254,9 @@ Thank you 🙏
 
           <button
             disabled={items.length === 0 || hasPaid}
-            onClick={() => { setHasPaid(true); }}
+            onClick={() => {
+              setHasPaid(true);
+            }}
             className={`w-full py-3 rounded-md font-medium text-white ${
               items.length === 0 || hasPaid ? "bg-gray-400" : "bg-indigo-600"
             }`}
