@@ -10,45 +10,53 @@ export default function VendorDeliveryDetails() {
 
   if (!data) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-gray-600">
+      <div className="min-h-screen flex items-center justify-center px-4 text-center text-gray-600">
         No delivery details found.
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-10">
-      <div className="max-w-xl mx-auto bg-white rounded-xl shadow p-6 space-y-5">
+    <div className="min-h-screen bg-gray-50 px-4 py-8 sm:py-12">
+      <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow p-5 sm:p-8 space-y-6">
 
         {/* HEADER */}
-        <div className="text-center">
-          <span className="inline-block bg-indigo-100 text-indigo-700 text-xs px-3 py-1 rounded-full mb-2">
-            Vendor View 
-            {/* (Demo) */}
+        <div className="text-center space-y-2">
+          <span className="inline-block bg-indigo-100 text-indigo-700 text-xs px-3 py-1 rounded-full">
+            Vendor View
           </span>
 
-          <h1 className="text-xl font-bold text-gray-900">
+          <h1 className="text-lg sm:text-xl font-bold text-gray-900">
             Buyer Delivery Details
           </h1>
 
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 max-w-md mx-auto">
             Use these details to fulfill the order.
           </p>
         </div>
 
         {/* DETAILS */}
-        <div className="space-y-3 text-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
           <Detail label="Full Name" value={data.fullName} />
           <Detail label="Phone" value={data.phone} />
-          <Detail label="Address" value={data.address} />
           <Detail label="Delivery Window" value={data.deliveryWindow} />
-          {data.note && <Detail label="Note" value={data.note} />}
+
+          {/* Address spans full width */}
+          <div className="sm:col-span-2">
+            <Detail label="Address" value={data.address} />
+          </div>
+
+          {data.note && (
+            <div className="sm:col-span-2">
+              <Detail label="Note" value={data.note} />
+            </div>
+          )}
         </div>
 
         {/* ACTION */}
         <button
           onClick={() => navigate("/waiting-for-delivery")}
-          className="w-full bg-green-600 text-white py-3 rounded-md font-medium"
+          className="w-full sm:w-auto sm:px-10 bg-green-600 hover:bg-green-700 transition text-white py-3 rounded-lg font-medium mx-auto block"
         >
           Mark as Shipped
         </button>
@@ -63,9 +71,11 @@ export default function VendorDeliveryDetails() {
 
 function Detail({ label, value }) {
   return (
-    <div className="flex justify-between border-b pb-2">
-      <span className="text-gray-500">{label}</span>
-      <span className="font-medium text-gray-900">{value}</span>
+    <div className="border rounded-lg p-3 bg-gray-50">
+      <p className="text-gray-500 text-xs mb-1">{label}</p>
+      <p className="font-medium text-gray-900 break-words">
+        {value}
+      </p>
     </div>
   );
 }
