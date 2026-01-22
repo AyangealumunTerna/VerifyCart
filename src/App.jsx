@@ -13,6 +13,7 @@ import ConfirmDelivery from "./pages/ConfirmDelivery";
 import RaiseIssue from "./pages/RaiseIssue";
 import IssueSubmitted from "./pages/IssueSubmitted";
 import VendorDeliveryDetails from "./pages/VendorDeliveryDetails";
+import Verify from "./pages/Verify";
 
 export default function App() {
   return (
@@ -37,6 +38,7 @@ export default function App() {
         path="/vendor/delivery/:escrowId"
         element={<VendorDeliveryDetails />}
       />
+      <Route path="/verify" element={<Verify />} />
     </Routes>
   );
 }

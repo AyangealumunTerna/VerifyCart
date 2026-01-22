@@ -1,17 +1,11 @@
+import VerificationResult from "../components/VerificationResult";
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 import StatCard from "../components/StatCard";
-import BlogCard from "../components/BlogCard";
-import FeatureCard from "../components/FeatureCard";
-import VerificationResult from "../components/VerificationResult";
-import LoadingSpinner from "../components/LoadingSpinner";
-import Community from "../assets/community.png";
 import { useNavigate } from "react-router-dom";
 
-export default function Landing() {
-  // const [loading, setLoading] = useState(false);
-  // const [showResult, setShowResult] = useState(false);
-  const [handleUrl, setHandleUrl] = useState("");
+export default function Verify() {
+    const [handleUrl, setHandleUrl] = useState("");
   const navigate = useNavigate();
 
   function parseSocialUrl(url) {
@@ -96,90 +90,25 @@ export default function Landing() {
                 });
               }}
               className={`mt-4 px-6 py-2 text-sm rounded-md transition
-                ${
-                  !handleUrl.trim()
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-indigo-500 hover:bg-indigo-600 text-white"
-                }
-              `}
+                    ${
+                      !handleUrl.trim()
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        : "bg-indigo-500 hover:bg-indigo-600 text-white"
+                    }
+                  `}
             >
               Verify Now
             </button>
 
             {/* STATES
-            {loading && <LoadingSpinner />}
-            {showResult && <VerificationResult riskLevel="low" />} */}
+                {loading && <LoadingSpinner />}
+                {showResult && <VerificationResult riskLevel="low" />} */}
           </div>
         </div>
       </section>
-
-      {/* REPORT SCAM */}
-      <section className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-sm">
-        <h3 className="text-lg font-semibold">
-          Report <span className="text-red-500">scams</span> to help others
-        </h3>
-
-        <textarea
-          className="w-full mt-4 p-3 border rounded-md"
-          rows="4"
-          placeholder="Leave your report here..."
-        />
-
-        <button className="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-md">
-          Report
-        </button>
-      </section>
-
-      {/* BLOG */}
-      <section className="max-w-5xl mx-auto mt-12 px-6">
-        <h3 className="text-lg font-semibold text-center">Latest Blog Posts</h3>
-        <p className="text-sm text-gray-500 text-center mt-1">
-          Be best informed with the latest trends in fraud and scam protection
-        </p>
-
-        <div className="grid md:grid-cols-3 gap-6 mt-6">
-          <BlogCard
-            date="Dec 12, 2025"
-            title="How to Detect Fake Vendors on Social Links"
-            excerpt="Learn red flags to identify scam vendors quickly."
-          />
-          <BlogCard
-            date="Nov 13, 2025"
-            title="How Fake Online Vendors Operate"
-            excerpt="Understand scam patterns used by online fraudsters."
-          />
-          <BlogCard
-            date="Nov 12, 2025"
-            title="How Sponsored Ads Are Detected"
-            excerpt="Discover how scam ads bypass social media checks."
-          />
-        </div>
-
-        <div className="text-center mt-8">
-          <button className="px-6 py-2 bg-indigo-600 text-white rounded-md">
-            View all Blog Posts
-          </button>
-        </div>
-      </section>
-
-      {/* FEATURES */}
-      <section className="max-w-5xl mx-auto mt-14 px-6 flex flex-col gap-6 py-8">
-        <FeatureCard
-          title="Instant Verification"
-          description="Verify social media handles against scam records."
-          icon="⚡"
-        />
-        <FeatureCard
-          title="Community Reports"
-          description="Powered by thousands of real user verifications."
-          icon="👥"
-        />
-        <FeatureCard
-          title="Risk Score"
-          description="Analysis of the authenticity of online vendor links."
-          icon="🚨"
-        />
-      </section>
+      <div className="min-h-screen bg-indigo-50 py-10">
+        <VerificationResult />
+      </div>
     </div>
   );
 }

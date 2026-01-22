@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 /* =========================
    AI RISK CONFIG
@@ -25,6 +26,13 @@ const riskConfig = {
   },
 };
 
+// get URL query params
+// const [searchParams] = useSearchParams();
+
+// // URL params
+// const urlHandle = searchParams.get("vendor");
+// const urlPlatform = searchParams.get("platform");
+
 /* =========================
    MOCK AI REVIEW ENGINE
    (FRONTEND SAFE)
@@ -42,9 +50,7 @@ function runAIRiskAnalysis({ handle, platform }) {
     "fastcash",
   ];
 
-  const keywordFlag = suspiciousKeywords.some((k) =>
-    lower.includes(k)
-  );
+  const keywordFlag = suspiciousKeywords.some((k) => lower.includes(k));
 
   let riskLevel = "low";
   let trustScore = 92;
@@ -86,19 +92,40 @@ function runAIRiskAnalysis({ handle, platform }) {
 export default function VerificationResult() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   // expected from previous page
-  const { handle = "jennafootwear", platform = "Instagram" } =
-    location.state || {};
+  const stateData = location.state || {};
+
+  const rawHandle = searchParams.get("vendor") || stateData.handle || "";
+
+  const platform =
+    searchParams.get("platform") || stateData.platform || "Instagram";
+
+  // ✅ NORMALIZE HANDLE HERE
+  const normalizedHandle = rawHandle
+    .replace("@", "")
+    .replace("https://", "")
+    .replace("http://", "")
+    .replace("www.", "")
+    .split("/")
+    .pop()
+    .trim();
+
+  const handle = normalizedHandle || "Unknown Vendor";
 
   const [result, setResult] = useState(null);
 
   useEffect(() => {
-    // simulate AI processing delay
-    setTimeout(() => {
-      const analysis = runAIRiskAnalysis({ handle, platform });
+    const timer = setTimeout(() => {
+      const analysis = runAIRiskAnalysis({
+        handle,
+        platform,
+      });
       setResult(analysis);
     }, 1200);
+
+    return () => clearTimeout(timer);
   }, [handle, platform]);
 
   if (!result) {
@@ -122,7 +149,7 @@ export default function VerificationResult() {
             🧠 AI Risk Assessment
           </p>
           <p className="text-xs text-gray-500">
-            {result.vendorName} — {result.platform}
+            @{handle} — {result.platform}
           </p>
         </div>
 
@@ -144,15 +171,11 @@ export default function VerificationResult() {
       <div className="mt-6 space-y-3 text-sm text-gray-700">
         <div className="flex justify-between">
           <span>Account Age</span>
-          <span className="font-medium">
-            {result.metrics.accountAge}
-          </span>
+          <span className="font-medium">{result.metrics.accountAge}</span>
         </div>
         <div className="flex justify-between">
           <span>Followers</span>
-          <span className="font-medium">
-            {result.metrics.followers}
-          </span>
+          <span className="font-medium">{result.metrics.followers}</span>
         </div>
         <div className="flex justify-between text-destructive">
           <span>Threat Signals</span>
@@ -164,9 +187,7 @@ export default function VerificationResult() {
       <div
         className={`mt-6 p-4 rounded-lg ${config.bg} ${config.border} border`}
       >
-        <h4 className="text-sm font-semibold mb-2">
-          AI Risk Signals
-        </h4>
+        <h4 className="text-sm font-semibold mb-2">AI Risk Signals</h4>
         <ul className={`space-y-2 text-sm text-left ${config.text}`}>
           {result.insights.map((item, idx) => (
             <li key={idx}>✔ {item}</li>
@@ -176,14 +197,11 @@ export default function VerificationResult() {
 
       {/* EXPLANATION */}
       <div className="mt-6 p-4 bg-gray-50 rounded-lg text-xs text-gray-600">
-        <p className="font-medium mb-1">
-          How this score was generated
-        </p>
+        <p className="font-medium mb-1">How this score was generated</p>
         <p>
           This AI-assisted assessment is based on vendor identifiers,
-          platform-specific risk heuristics, and historical fraud
-          modeling. It does not scrape private data or guarantee vendor
-          behavior.
+          platform-specific risk heuristics, and historical fraud modeling. It
+          does not scrape private data or guarantee vendor behavior.
         </p>
       </div>
 
@@ -213,8 +231,8 @@ export default function VerificationResult() {
 
         <p className="mt-3 text-xs text-gray-400 text-center leading-relaxed">
           This assessment is generated using AI-assisted models and
-          public-signal heuristics. Payments are protected via escrow.
-          Proceed at your discretion.
+          public-signal heuristics. Payments are protected via escrow. Proceed
+          at your discretion.
         </p>
       </div>
     </div>
