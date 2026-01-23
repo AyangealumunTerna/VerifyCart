@@ -18,7 +18,6 @@ export default function VendorEscrow() {
     vendorBank.accountNumber.length >= 10 &&
     vendorBank.accountName;
 
-  
   const confirmEscrow = () => {
     const updatedEscrow = {
       ...escrow,
@@ -49,7 +48,7 @@ export default function VendorEscrow() {
       }
     }
   }, [escrowId]);
-  if (!escrow) return;
+  if (!escrow) return null;
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
@@ -75,15 +74,43 @@ export default function VendorEscrow() {
           </p>
         </div>
 
-        <div className="bg-gray-50 border rounded-md p-4 text-sm text-gray-700 space-y-1">
+        <div className="bg-green-50 border border-green-200 rounded-md p-4 text-sm text-green-800 space-y-1">
+          <p className="font-semibold">Buyer Payment Summary</p>
+
+          <p>
+            <span className="font-medium">Buyer Status:</span>{" "}
+            <span className="text-green-700">✅ Payment Initiated</span>
+          </p>
+
+          <p>
+            <span className="font-medium">Amount:</span> ₦
+            {escrow.totalPayable?.toLocaleString()}
+          </p>
+
+          <p>
+            <span className="font-medium">Escrow ID:</span>{" "}
+            <span className="font-mono">{escrowId}</span>
+          </p>
+
+          <p>
+            <span className="font-medium">Date:</span>{" "}
+            {new Date(escrow.createdAt).toLocaleDateString()}
+          </p>
+
+          <p className="text-xs text-green-700 pt-1">
+            Status: Awaiting vendor confirmation before shipping.
+          </p>
+        </div>
+
+        {/* <div className="bg-gray-50 border rounded-md p-4 text-sm text-gray-700 space-y-1">
           <p>
             <span className="font-medium">Escrow ID:</span>{" "}
             <span className="font-mono">{escrowId}</span>
           </p>
           <p>
-            <span className="font-medium">Funds Status:</span> Locked & secure
+            <span className="font-medium">Funds Status:</span> Locked in escrow (pending vendor confirmation)
           </p>
-        </div>
+        </div> */}
 
         <div className="bg-white border rounded-md p-4 space-y-3">
           <h2 className="text-sm font-semibold text-gray-800">
@@ -102,7 +129,7 @@ export default function VendorEscrow() {
           />
 
           <input
-            type="text" 
+            type="text"
             inputMode="numeric"
             placeholder="Account Number"
             disabled={confirmed}
@@ -129,6 +156,10 @@ export default function VendorEscrow() {
             confirmation.
           </p>
         </div>
+
+        <p className="text-xs text-center text-gray-600">
+          🛡️ Buyer funds are secured in escrow before you ship.
+        </p>
 
         {!confirmed ? (
           <button
