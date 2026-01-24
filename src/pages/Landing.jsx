@@ -3,9 +3,9 @@ import Navbar from "../components/Navbar";
 import StatCard from "../components/StatCard";
 import BlogCard from "../components/BlogCard";
 import FeatureCard from "../components/FeatureCard";
-import VerificationResult from "../components/VerificationResult";
-import LoadingSpinner from "../components/LoadingSpinner";
-import Community from "../assets/community.png";
+import Blog1 from "../assets/blog/blog1.png";
+import Blog2 from "../assets/blog/blog2.png";
+import Blog3 from "../assets/blog/blog3.png";
 import { useNavigate } from "react-router-dom";
 
 export default function Landing() {
@@ -139,16 +139,21 @@ export default function Landing() {
 
         <div className="grid md:grid-cols-3 gap-6 mt-6">
           <BlogCard
+            image={Blog1}
             date="Dec 12, 2025"
             title="How to Detect Fake Vendors on Social Links"
             excerpt="Learn red flags to identify scam vendors quickly."
           />
+
           <BlogCard
+            image={Blog2}
             date="Nov 13, 2025"
             title="How Fake Online Vendors Operate"
             excerpt="Understand scam patterns used by online fraudsters."
           />
+
           <BlogCard
+            image={Blog3}
             date="Nov 12, 2025"
             title="How Sponsored Ads Are Detected"
             excerpt="Discover how scam ads bypass social media checks."
