@@ -20,7 +20,7 @@ export default function AdminDashboard() {
         </button> */}
 
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/login")}
           className="text-sm font-medium text-red-600 border border-red-200 px-3 py-1 rounded-md hover:bg-red-50"
         >
           Logout

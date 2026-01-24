@@ -1,12 +1,12 @@
 import { useParams, useNavigate } from "react-router-dom";
-// import { useState } from "react";
 import { useEffect, useState } from "react";
 
-export default function VendorEscrow() {
+export default function VendorInviteAccepted() {
   const [escrow, setEscrow] = useState(null);
   const { escrowId } = useParams();
   const navigate = useNavigate();
   const [confirmed, setConfirmed] = useState(false);
+
   const [vendorBank, setVendorBank] = useState({
     bankName: "",
     accountNumber: "",
@@ -26,14 +26,17 @@ export default function VendorEscrow() {
       status: "VENDOR_CONFIRMED",
     };
 
-    // 🔒 Save updated escrow
     localStorage.setItem(`escrow-${escrowId}`, JSON.stringify(updatedEscrow));
-
     setConfirmed(true);
 
     setTimeout(() => {
-      navigate(`/delivery-details/${escrowId}`);
-    }, 1500);
+      navigate("/vendor-accepted", {
+        state: {
+          escrowId,
+          items: escrow.items,
+        },
+      });
+    }, 800);
   };
 
   useEffect(() => {
@@ -48,43 +51,48 @@ export default function VendorEscrow() {
       }
     }
   }, [escrowId]);
+
   if (!escrow) return null;
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="max-w-md w-full bg-white rounded-xl shadow p-6 space-y-5">
+      <div className="max-w-md w-full bg-white rounded-xl shadow p-6 space-y-6">
+        {/* STATUS */}
         <div className="text-center">
           <span
-            className={`inline-block text-xs px-3 py-1 rounded-full mb-2 ${
+            className={`inline-block text-xs px-3 py-1 rounded-full mb-3 ${
               confirmed
                 ? "bg-green-100 text-green-700"
                 : "bg-indigo-100 text-indigo-700"
             }`}
           >
-            {confirmed ? "Escrow Accepted" : "Escrow Pending"}
+            {confirmed ? "Transaction Accepted" : "Action Required"}
           </span>
 
           <h1 className="text-xl font-bold text-gray-900">
-            Escrow Payment Request
+            Secure Transaction Invitation
           </h1>
 
-          <p className="text-sm text-gray-600 mt-1">
-            A buyer wants to complete this transaction securely using
-            VerifyCart.
+          <p className="text-sm text-gray-600 mt-2">
+            A buyer has invited you to complete this transaction securely using
+            VerifyCart escrow.
           </p>
         </div>
 
-        <div className="bg-green-50 border border-green-200 rounded-md p-4 text-sm text-green-800 space-y-1">
-          <p className="font-semibold">Buyer Payment Summary</p>
+        {/* BUYER DETAILS */}
+        <div className="bg-indigo-50 border border-indigo-200 rounded-md p-4 text-sm text-indigo-900 space-y-1">
+          <p className="font-semibold">Buyer Transaction Details</p>
 
           <p>
             <span className="font-medium">Buyer Status:</span>{" "}
-            <span className="text-green-700">✅ Payment Initiated</span>
+            {confirmed ? "✅ Vendor accepted" : "⏳ Awaiting your acceptance"}
           </p>
 
           <p>
-            <span className="font-medium">Amount:</span> ₦
-            {escrow.totalPayable?.toLocaleString()}
+            <span className="font-medium">Items total:</span> ₦
+            {escrow.items
+              .reduce((sum, item) => sum + item.price, 0)
+              .toLocaleString()}
           </p>
 
           <p>
@@ -93,29 +101,59 @@ export default function VendorEscrow() {
           </p>
 
           <p>
-            <span className="font-medium">Date:</span>{" "}
+            <span className="font-medium">Date initiated:</span>{" "}
             {new Date(escrow.createdAt).toLocaleDateString()}
           </p>
 
-          <p className="text-xs text-green-700 pt-1">
-            Status: Awaiting vendor confirmation before shipping.
+          <p className="text-xs text-indigo-700 pt-2">
+            The buyer will complete payment only after you accept this escrow.
           </p>
         </div>
-
-        {/* <div className="bg-gray-50 border rounded-md p-4 text-sm text-gray-700 space-y-1">
-          <p>
-            <span className="font-medium">Escrow ID:</span>{" "}
-            <span className="font-mono">{escrowId}</span>
+        {/* ITEMS SUMMARY */}
+        <div className="bg-white border rounded-md p-4 text-sm space-y-2">
+          <p className="font-semibold text-gray-800">
+            Items in this transaction
           </p>
-          <p>
-            <span className="font-medium">Funds Status:</span> Locked in escrow (pending vendor confirmation)
-          </p>
-        </div> */}
 
+          {escrow.items.map((item) => (
+            <div key={item.id} className="flex justify-between border-b py-1">
+              <span>{item.name}</span>
+              <span>₦{item.price.toLocaleString()}</span>
+            </div>
+          ))}
+
+          <div className="flex justify-between font-semibold pt-2">
+            <span>Total</span>
+            <span>
+              ₦
+              {escrow.items
+                .reduce((sum, item) => sum + item.price, 0)
+                .toLocaleString()}
+            </span>
+          </div>
+        </div>
+
+        {/* HOW IT WORKS */}
+        <div className="bg-white border rounded-md p-4 text-sm text-gray-700 space-y-2">
+          <p className="font-semibold text-gray-800">How VerifyCart Works</p>
+          <ul className="list-disc list-inside space-y-1">
+            <li>Buyer funds are held securely in escrow</li>
+            <li>You ship only after payment is locked</li>
+            <li>Funds are released after delivery is confirmed</li>
+            <li>No off-platform payments required</li>
+          </ul>
+        </div>
+
+        {/* BANK DETAILS */}
         <div className="bg-white border rounded-md p-4 space-y-3">
           <h2 className="text-sm font-semibold text-gray-800">
-            Payout Bank Details
+            Where should we pay you?
           </h2>
+
+          <p className="text-xs text-gray-500">
+            Enter the bank account where your funds will be sent after
+            successful delivery.
+          </p>
 
           <input
             type="text"
@@ -152,34 +190,39 @@ export default function VendorEscrow() {
           />
 
           <p className="text-xs text-gray-500">
-            Funds will be paid to this account after successful delivery
-            confirmation.
+            Your details are encrypted and cannot be changed after acceptance.
           </p>
         </div>
 
-        <p className="text-xs text-center text-gray-600">
-          🛡️ Buyer funds are secured in escrow before you ship.
-        </p>
-
+        {/* CTA */}
         {!confirmed ? (
           <button
             disabled={!isBankValid}
             onClick={confirmEscrow}
             className={`w-full py-3 rounded-md font-medium text-white ${
-              isBankValid ? "bg-indigo-600" : "bg-gray-400 cursor-not-allowed"
+              isBankValid
+                ? "bg-indigo-600 hover:bg-indigo-700"
+                : "bg-gray-400 cursor-not-allowed"
             }`}
           >
-            Confirm & Accept Escrow
+            Accept Secure Transaction
           </button>
         ) : (
-          <p className="text-sm text-green-600 font-medium text-center">
-            ✅ Escrow confirmed. Bank details locked.
-          </p>
+          <div className="text-center space-y-2">
+            <p className="text-green-600 font-medium">
+              ✅ Transaction accepted
+            </p>
+            <p className="text-sm text-gray-600">
+              You’ve accepted this escrow. The buyer will now fund the
+              transaction.
+            </p>
+          </div>
         )}
 
-        <p className="text-xs text-gray-400 text-center leading-relaxed">
-          Your payout details are securely recorded. Funds will be released
-          automatically after buyer confirms delivery.
+        {/* FOOTER */}
+        <p className="text-xs text-center text-gray-400 leading-relaxed">
+          🛡️ You will never be asked to ship before buyer funds are secured in
+          escrow.
         </p>
       </div>
     </div>

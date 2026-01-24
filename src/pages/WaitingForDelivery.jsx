@@ -1,15 +1,14 @@
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function WaitingForDelivery() {
   const navigate = useNavigate();
+  const { escrowId } = useParams();
 
   return (
     <div className="min-h-screen bg-green-50 flex items-center justify-center px-4">
       <div className="max-w-md w-full bg-white rounded-xl shadow p-6 text-center space-y-5">
-
-        <h1 className="text-xl font-bold text-gray-900">
-          Vendor Confirmed 🎉
-        </h1>
+        <h1 className="text-xl font-bold text-gray-900">Vendor Confirmed 🎉</h1>
 
         <p className="text-sm text-gray-600">
           The vendor has accepted escrow and is preparing your order.
@@ -26,7 +25,7 @@ export default function WaitingForDelivery() {
         {/* ACTION BUTTONS */}
         <div className="flex flex-col gap-3 pt-4">
           <button
-            onClick={() => navigate("/confirm-delivery")}
+            onClick={() => navigate(`/confirm-delivery/${escrowId}`)}
             className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
           >
             ✅ Confirm Delivery
@@ -39,7 +38,6 @@ export default function WaitingForDelivery() {
             ⚠️ Raise an Issue
           </button>
         </div>
-
       </div>
     </div>
   );

@@ -209,7 +209,7 @@ export default function VerificationResult() {
       <div className="mt-6">
         <button
           onClick={() =>
-            navigate("/proceed-to-pay", {
+            navigate("/start-secure-purchase", {
               state: {
                 verification: {
                   vendorName: result.vendorName,
@@ -226,7 +226,7 @@ export default function VerificationResult() {
               : "bg-indigo-600"
           }`}
         >
-          Proceed to Pay
+          Start Secure Purchase
         </button>
 
         <p className="mt-3 text-xs text-gray-400 text-center leading-relaxed">

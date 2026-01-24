@@ -19,7 +19,7 @@ export default function Navbar() {
         </span>
         </div>
         <button onClick={() =>
-            navigate("/admin-dashboard")} className="px-4 py-2 text-sm text-white bg-indigo-600 rounded-md hover:bg-indigo-700">
+            navigate("/login")} className="px-4 py-2 text-sm text-white bg-indigo-600 rounded-md hover:bg-indigo-700">
           Login
         </button>
       </div>
